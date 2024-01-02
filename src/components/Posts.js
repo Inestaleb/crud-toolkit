@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addPosts, deletePosts } from "../redux/postsSlice";
+import { addPosts, deletePosts, updatePost } from "../redux/postsSlice";
 export default function Posts() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  const [updateTitle, setUpdatedTitle] = useState("");
+  const [updateDescription, setUpdatedDescription] = useState("");
+
   const [isEdit, setIsEdit] = useState(false);
+  const [id, setId] = useState(null);
   const posts = useSelector((state) => state.posts.items);
   const dispatch = useDispatch();
   return (
@@ -39,18 +44,46 @@ export default function Posts() {
               <div key={post.id} className="post">
                 <h2>{post.title}</h2>
                 <p>{post.description}</p>
-                <button onClick={() => setIsEdit(true)}>Edit</button>
+                <button
+                  onClick={() => {
+                    setIsEdit(true);
+                    setId(post.id);
+                  }}
+                >
+                  Edit
+                </button>
                 <button onClick={() => dispatch(deletePosts(post.id))}>
                   Delete
                 </button>
-                <br/>
-                {isEdit && 
-                <>
-                <input type="text" placeholder="updated title"/>
-                <input type="text" placeholder="updated description"/>
-                <button>Update</button>
-                </>
-                }
+                <br />
+                {isEdit && id == post.id && (
+                  <>
+                    <input
+                      type="text"
+                      placeholder="updated title"
+                      onChange={(e) => setUpdatedTitle(e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      placeholder="updated description"
+                      onChange={(e) => setUpdatedDescription(e.target.value)}
+                    />
+                    <button
+                      onClick={() => {
+                        dispatch(
+                          updatePost({
+                            id: post.id,
+                            title: updateTitle,
+                            description: updateDescription,
+                          })
+                        );
+                        setIsEdit(false);
+                      }}
+                    >
+                      Update
+                    </button>
+                  </>
+                )}
               </div>
             ))
           : "there is no post"}
