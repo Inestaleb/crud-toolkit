@@ -12,6 +12,16 @@ export default function Posts() {
   const [id, setId] = useState(null);
   const posts = useSelector((state) => state.posts.items);
   const dispatch = useDispatch();
+  const [isDeleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const handleDeleteConfirmation = (postId) => {
+    setId(postId);
+    setDeleteConfirmationOpen(true);
+  };
+
+  const handleDeletePost = () => {
+    dispatch(deletePosts(id));
+    setDeleteConfirmationOpen(false);
+  };
   return (
     <div>
       <div className="form">
@@ -52,7 +62,7 @@ export default function Posts() {
                 >
                   Edit
                 </button>
-                <button onClick={() => dispatch(deletePosts(post.id))}>
+                <button onClick={() => handleDeleteConfirmation(post.id)}>
                   Delete
                 </button>
                 <br />
@@ -88,6 +98,13 @@ export default function Posts() {
             ))
           : "there is no post"}
       </div>
+      {isDeleteConfirmationOpen && (
+        <div className="delete-confirmation">
+          <p>Are you sure you want to delete this post?</p>
+          <button onClick={handleDeletePost}>Yes</button>
+          <button onClick={() => setDeleteConfirmationOpen(false)}>No</button>
+        </div>
+      )}
     </div>
   );
 }
